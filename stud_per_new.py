@@ -15,8 +15,8 @@ collection = db["student_pred"]
 
 
 def load_model():
-    with  open("F:\FULLSTACKDATASCIENCE\Stud_per_app\student_lr_final_model.pkl",'rb') as file:
-        model,scaler,le=pickle.load(file)
+    with  open("F:\\FULLSTACKDATASCIENCE\Stud_per_app\student_lr_final_model.pkl",'rb') as file:
+     model,scaler,le=pickle.load(file)
     return model,scaler,le
 
 def preprocesssing_input_data(data, scaler, le):
@@ -52,6 +52,7 @@ def main():
         prediction = predict_data(user_data)
         st.success(f"your prediciotn result is {prediction}")
         user_data["prediction"] = round(float (prediction[0]),2)
+        user_data = {key: int(value) if isinstance(value, np.integer) else float(value) if isinstance(value, np.floating) else value for key, value in user_data.items()}
         collection.insert_one(user_data)
     
 if __name__ == "__main__":
