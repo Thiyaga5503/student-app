@@ -15,7 +15,7 @@ collection = db["student_pred"]
 
 
 def load_model():
-    with  open("F:\\FULLSTACKDATASCIENCE\STUD_PER_APP\student_lr_final_model.pkl",'rb') as file:
+    with  open("F:\FULLSTACKDATASCIENCE\Stud_per_app\student_lr_final_model.pkl",'rb') as file:
      model,scaler,le=pickle.load(file)
     return model,scaler,le
 
