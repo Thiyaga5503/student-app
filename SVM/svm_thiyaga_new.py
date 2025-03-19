@@ -10,6 +10,14 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import joblib
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+
+uri = "mongodb+srv://Thiyaga:1234@cluster0.zpln3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client['SVM']
+collection = db["svm_pred"]
 
 # Load the iris dataset
 data = load_iris()
@@ -60,7 +68,8 @@ logistics_multinomial = LogisticRegression(multi_class='multinomial', solver='lb
 logistics_multinomial.fit(x_train_multi, y_train_multi)
 
 # Create a Streamlit app
-st.title("Classification Models")
+def main():
+ st.title("Classification Models")
 
 # Display the binary classification results
 st.header("Binary Classification")
@@ -95,3 +104,6 @@ st.write("Classification Report:")
 st.write(classification_report(y_test_multi, logistics_multinomial.predict(x_test_multi)))
 st.write("Confusion Matrix:")
 st.write(confusion_matrix(y_test_multi, logistics_multinomial.predict(x_test_multi)))
+
+if __name__ == "__main__":
+    main()
