@@ -16,7 +16,7 @@ from pymongo.server_api import ServerApi  # type: ignore
 uri = "mongodb+srv://Thiyaga:1234@cluster0.zpln3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
-db = client['Iris_Classification']
+db = client['IrisClassification']
 collection = db["IrisPrediction"]
 
 # Load the iris dataset
@@ -109,5 +109,19 @@ def main():
         st.write("Multi-Class Logistic Regression Classifier (One-vs-Rest):", data.target_names[prediction_logistics_ovr[0]])
         st.write("Multi-Class Logistic Regression Classifier (Multinomial):", data.target_names[prediction_logistics_multinomial[0]])
 
+ # Store the predictions in the MongoDB database
+    prediction_data = {
+        "sepal_length": sepal_length,
+        "sepal_width": sepal_width,
+        "petal_length": petal_length,
+        "petal_width": petal_width,
+        "binary_svm_prediction": data.target_names[prediction_binary[0]],
+        "binary_logistics_prediction": data.target_names[prediction_logistics_binary[0]],
+        "multi_svm_prediction": data.target_names[prediction_multi[0]],
+        "multi_logistics_ovr_prediction": data.target_names[prediction_logistics_ovr[0]],
+        "multi_logistics_multinomial_prediction": data.target_names[prediction_logistics_multinomial[0]]
+    }
+    collection.insert_one(prediction_data)
+    
 if __name__ == "__main__":
     main()
