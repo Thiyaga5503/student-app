@@ -122,6 +122,6 @@ def main():
         "multi_logistics_multinomial_prediction": data.target_names[prediction_logistics_multinomial[0]]
     }
     collection.insert_one(prediction_data)
-    
+
 if __name__ == "__main__":
     main()
