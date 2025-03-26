@@ -10,14 +10,6 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import joblib
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
-
-uri = "mongodb+srv://Thiyaga:1234@cluster0.zpln3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
-db = client['SVM']
-collection = db["svm_pred"]
 
 # Load the iris dataset
 data = load_iris()
@@ -69,41 +61,45 @@ logistics_multinomial.fit(x_train_multi, y_train_multi)
 
 # Create a Streamlit app
 def main():
- st.title("Classification Models")
+    st.title("Iris Classification App")
 
-# Display the binary classification results
-st.header("Binary Classification")
-st.subheader("SVM Classifier")
-st.write("Classification Report:")
-st.write(classification_report(y_test, svm_binary.predict(x_test)))
-st.write("Confusion Matrix:")
-st.write(confusion_matrix(y_test, svm_binary.predict(x_test)))
+    # Input form
+    st.header("Enter Input Values")
+    sepal_length = st.number_input("Sepal Length (cm)", min_value=0.0, max_value=10.0, value=5.0)
+    sepal_width = st.number_input("Sepal Width (cm)", min_value=0.0, max_value=10.0, value=3.0)
+    petal_length = st.number_input("Petal Length (cm)", min_value=0.0, max_value=10.0, value=4.0)
+    petal_width = st.number_input("Petal Width (cm)", min_value=0.0, max_value=10.0, value=1.0)
 
-st.subheader("Logistic Regression Classifier")
-st.write("Classification Report:")
-st.write(classification_report(y_test, logistics_binary.predict(x_test)))
-st.write("Confusion Matrix:")
-st.write(confusion_matrix(y_test, logistics_binary.predict(x_test)))
+    # Predict button
+    if st.button("Predict"):
+        # Create a new input array
+        new_input = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
 
-# Display the multi-class classification results
-st.header("Multi-Class Classification")
-st.subheader("SVM Classifier")
-st.write("Classification Report:")
-st.write(classification_report(y_test_multi, svm_multi.predict(x_test_multi)))
-st.write("Confusion Matrix:")
-st.write(confusion_matrix(y_test_multi, svm_multi.predict(x_test_multi)))
+        # Scale the new input array
+        new_input_scaled = scaler.transform(new_input)
 
-st.subheader("Logistic Regression Classifier (One-vs-Rest)")
-st.write("Classification Report:")
-st.write(classification_report(y_test_multi, logistics_ovr.predict(x_test_multi)))
-st.write("Confusion Matrix:")
-st.write(confusion_matrix(y_test_multi, logistics_ovr.predict(x_test_multi)))
+        # Predict the result using the binary SVM classifier
+        prediction_binary = svm_binary.predict(new_input_scaled)
 
-st.subheader("Logistic Regression Classifier (Multinomial)")
-st.write("Classification Report:")
-st.write(classification_report(y_test_multi, logistics_multinomial.predict(x_test_multi)))
-st.write("Confusion Matrix:")
-st.write(confusion_matrix(y_test_multi, logistics_multinomial.predict(x_test_multi)))
+        # Predict the result using the binary logistic regression classifier
+        prediction_logistics_binary = logistics_binary.predict(new_input_scaled)
+
+        # Predict the result using the multi-class SVM classifier
+        prediction_multi = svm_multi.predict(new_input)
+
+        # Predict the result using the multi-class logistic regression classifier with one-vs-rest strategy
+        prediction_logistics_ovr = logistics_ovr.predict(new_input)
+
+        # Predict the result using the multi-class logistic regression classifier with multinomial strategy
+        prediction_logistics_multinomial = logistics_multinomial.predict(new_input)
+
+        # Display the predictions
+        st.header("Predictions")
+        st.write("Binary SVM Classifier:", data.target_names[prediction_binary[0]])
+        st.write("Binary Logistic Regression Classifier:", data.target_names[prediction_logistics_binary[0]])
+        st.write("Multi-Class SVM Classifier:", data.target_names[prediction_multi[0]])
+        st.write("Multi-Class Logistic Regression Classifier (One-vs-Rest):", data.target_names[prediction_logistics_ovr[0]])
+        st.write("Multi-Class Logistic Regression Classifier (Multinomial):", data.target_names[prediction_logistics_multinomial[0]])
 
 if __name__ == "__main__":
     main()
