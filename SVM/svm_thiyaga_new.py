@@ -10,6 +10,14 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import joblib
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
+from pymongo.mongo_client import MongoClient  # type: ignore
+from pymongo.server_api import ServerApi  # type: ignore
+
+uri = "mongodb+srv://Thiyaga:1234@cluster0.zpln3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client['Iris_Classification']
+collection = db["IrisPrediction"]
 
 # Load the iris dataset
 data = load_iris()
